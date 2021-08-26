@@ -1,0 +1,107 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "br.com.zup.felipe.gadelha";
+option java_outer_classname = "KeyManager";
+
+package br.com.zup.felipe.gadelha;
+
+import "google/protobuf/timestamp.proto";
+//import "validate/validate.proto";
+
+service KeyManagerRegisterService {
+  rpc register (PixRq) returns (PixRs) {}
+}
+
+service KeyManagerDeleteService {
+  rpc delete (DeletePixRq) returns (DeletePixRs) {}
+}
+
+service KeyManagerFindService {
+  rpc find (FindPixRq) returns (FindPixRs) {}
+}
+
+service KeyManagerFindAllService {
+  rpc findAll (FindAllPixRq) returns (FindAllPixRs) {}
+}
+
+enum PixKeyType {
+  UNRECOGNIZABLE = 0;
+  CPF = 1;
+  PHONE = 2;
+  EMAIL = 3;
+  RANDOM = 4;
+}
+
+enum AccountType {
+  UNKNOWABLE = 0;
+  SAVING = 1;
+  CURRENT = 2;
+}
+
+message ExceptionDetails {
+  string title = 1;
+  int32 code = 2;
+  string message = 3;
+  google.protobuf.Timestamp timestamp = 5;
+}
+
+message PixRq {
+  string clientId = 1;
+  string value = 2;
+  PixKeyType keyType = 3;
+  AccountType accountType = 4;
+}
+
+message PixRs {
+  string pixId = 1;
+}
+
+message DeletePixRq {
+  string pixId = 1;
+  string clientId = 2;
+}
+
+message DeletePixRs { }
+
+message FindPixRq {
+  message FindByPixId {
+    string pixId = 1;
+    string clientId = 2;
+  }
+  oneof filter {
+    FindByPixId pixId = 1;
+    string pixKey = 2;
+  }
+}
+message FindPixRs {
+  message AccountRs {
+    string name = 1;
+    string agency = 2;
+    string number = 3;
+    AccountType type = 4;
+  }
+
+  optional string pixId = 1;
+  optional string clientId = 2;
+  string name = 3;
+  string cpf = 4;
+  string value = 5;
+  PixKeyType keyType = 6;
+  AccountRs account = 7;
+  google.protobuf.Timestamp createdAt = 8;
+}
+
+message FindAllPixRq { string clientId = 1; }
+
+message FindAllPixRs {
+  message KeyRs {
+    string pixId = 1;
+    string clientId = 2;
+    PixKeyType keyType = 3;
+    string value = 4;
+    AccountType accountType = 5;
+    google.protobuf.Timestamp createdAt = 6;
+  }
+  repeated KeyRs pixKeys = 1;
+}
