@@ -10,6 +10,9 @@ plugins {
 version = "0.1"
 group = "br.com.zup.felipe.gadelha"
 
+allOpen {
+    annotation("javax.inject.Singleton")
+}
 repositories {
     mavenCentral()
 }
@@ -29,15 +32,16 @@ dependencies {
 
     implementation("io.micronaut.grpc:micronaut-grpc-client-runtime")
     implementation("io.micronaut.kotlin:micronaut-kotlin-runtime")
-    implementation("io.micronaut.grpc:micronaut-grpc-runtime")
     implementation("javax.annotation:javax.annotation-api")
     implementation("org.jetbrains.kotlin:kotlin-reflect:${kotlinVersion}")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:${kotlinVersion}")
     runtimeOnly("ch.qos.logback:logback-classic")
     implementation("io.micronaut:micronaut-validation")
     implementation("io.micronaut:micronaut-management")
-
-    implementation("javax.inject:javax.inject:1")
+    implementation("io.micronaut.beanvalidation:micronaut-hibernate-validator")
+//    implementation("io.micronaut.grpc:micronaut-grpc-runtime")
+//    implementation("javax.inject:javax.inject:1")
+//    annotationProcessor("io.micronaut:micronaut-inject-java:2.5.12")
 
     implementation("io.micronaut:micronaut-http-client")
 
@@ -47,10 +51,15 @@ dependencies {
     testImplementation("org.testcontainers:testcontainers")
     // testes
     testAnnotationProcessor("io.micronaut:micronaut-inject-java")
-    testImplementation("io.micronaut:micronaut-http-client")
     testImplementation("org.mockito:mockito-core")
     testImplementation("com.h2database:h2")
     testImplementation("io.micronaut:micronaut-http-client")
+    // https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-params
+    testImplementation("org.junit.jupiter:junit-jupiter-params:5.7.2")
+    // https://mvnrepository.com/artifact/com.github.javafaker/javafaker
+    testImplementation("com.github.javafaker:javafaker:1.0.2")
+
+    testImplementation("org.mockito:mockito-inline:3.+")
 }
 
 application {
