@@ -12,9 +12,8 @@ import java.util.*
 class FindAllPixController(
     val grpcClient: KeyManagerFindAllServiceGrpc.KeyManagerFindAllServiceBlockingStub
 ) {
-
     @Get
-    fun faindAll(@Header("CLIENT_ID") clientId: UUID): HttpResponse<Any>{
+    fun findAll(@Header("CLIENT_ID") clientId: UUID): HttpResponse<Any>{
         val result = grpcClient.findAll(FindAllPixRq.newBuilder()
             .setClientId(clientId.toString())
             .build()

@@ -2,14 +2,19 @@ package br.com.zup.felipe.gadelha.api.handler
 
 import io.grpc.Status
 import io.grpc.StatusRuntimeException
+import io.micronaut.context.annotation.Replaces
 import io.micronaut.context.annotation.Requires
 import io.micronaut.http.HttpRequest
 import io.micronaut.http.HttpResponse
 import io.micronaut.http.HttpStatus.*
+import io.micronaut.http.client.exceptions.HttpClientResponseException
 import io.micronaut.http.server.exceptions.ExceptionHandler
 import jakarta.inject.Singleton
+import java.lang.RuntimeException
+import javax.validation.ConstraintViolationException
 
 @Singleton
+//@Replaces(StatusRuntimeException::class)
 class StatusRuntimeExceptionHandler: ExceptionHandler<StatusRuntimeException, HttpResponse<*>> {
 
     override fun handle(request: HttpRequest<*>, ex: StatusRuntimeException): HttpResponse<*> {
@@ -22,7 +27,7 @@ class StatusRuntimeExceptionHandler: ExceptionHandler<StatusRuntimeException, Ht
                 Status.UNKNOWN.code -> HttpExceptionDetails.of(ex, INTERNAL_SERVER_ERROR)
                 else -> HttpExceptionDetails.of(ex, INTERNAL_SERVER_ERROR)
             }
-    }
+        }
 }
 
 

@@ -13,7 +13,7 @@ import javax.validation.constraints.Size
 @PixValue
 data class PixRequest(
     @field:Size(max = 77)
-    val value: String,
+    val value: String?,
     @field:NotNull
     val keyType: PixKeyType,
     @field:NotNull
@@ -23,7 +23,7 @@ data class PixRequest(
         PixRq.newBuilder()
             .setClientId(clientId.toString())
             .setKeyType(keyType)
-            .setValue(value)
+            .setValue(value ?: "")
             .setAccountType(accountType)
             .build()
 }

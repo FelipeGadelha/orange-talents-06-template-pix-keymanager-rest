@@ -10,6 +10,8 @@ import io.micronaut.http.annotation.Header
 import io.micronaut.http.annotation.PathVariable
 import io.micronaut.validation.Validated
 import java.util.*
+import javax.validation.constraints.NotBlank
+import javax.validation.constraints.NotNull
 
 @Validated
 @Controller("/api/v1/pix")

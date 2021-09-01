@@ -11,7 +11,7 @@ version = "0.1"
 group = "br.com.zup.felipe.gadelha"
 
 allOpen {
-    annotation("javax.inject.Singleton")
+    annotation("jakarta.inject.Singleton")
 }
 repositories {
     mavenCentral()

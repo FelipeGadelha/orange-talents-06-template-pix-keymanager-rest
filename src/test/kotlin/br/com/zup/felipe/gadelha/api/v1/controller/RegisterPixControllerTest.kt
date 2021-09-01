@@ -7,6 +7,8 @@ import br.com.zup.felipe.gadelha.PixRs
 import br.com.zup.felipe.gadelha.api.v1.dto.request.PixRequest
 import br.com.zup.felipe.gadelha.infra.integration.GrpcClientFactory
 import com.github.javafaker.Faker
+import io.grpc.Status
+import io.grpc.StatusRuntimeException
 import io.micronaut.context.annotation.Factory
 import io.micronaut.context.annotation.Replaces
 import io.micronaut.http.HttpRequest
@@ -19,12 +21,14 @@ import jakarta.inject.Inject
 import jakarta.inject.Singleton
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
+import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
 import org.mockito.BDDMockito
 import org.mockito.Mockito
+import org.mockito.Mockito.`when`
 import java.util.*
 import java.util.stream.Stream
 
@@ -68,6 +72,7 @@ internal class RegisterPixControllerTest {
                 Arguments.of(PixKeyType.PHONE.toString(), "+55${faker.phoneNumber().cellPhone()}",AccountType.SAVING),
                 Arguments.of(PixKeyType.CPF.toString(), "7189495", AccountType.SAVING),
                 Arguments.of(PixKeyType.EMAIL.toString(), "felipe@", AccountType.SAVING),
+                Arguments.of(PixKeyType.RANDOM.toString(), "felipe@", AccountType.SAVING),
             )
         @JvmStatic
         fun provideTestArgumentsSuccessfully(): Stream<Arguments> =
@@ -84,7 +89,7 @@ internal class RegisterPixControllerTest {
                 Arguments.of(PixKeyType.CPF.toString(), "91611511496", AccountType.SAVING),
                 Arguments.of(PixKeyType.PHONE.toString(), "+5511${Random().nextInt(999999999)}", AccountType.CURRENT),
                 Arguments.of(PixKeyType.EMAIL.toString(), faker.internet().emailAddress(), AccountType.SAVING),
-//                Arguments.of(PixKeyType.RANDOM.toString(), "", AccountType.CURRENT),
+                Arguments.of(PixKeyType.RANDOM.toString(), "", AccountType.CURRENT),
             )
     }
 
@@ -125,7 +130,25 @@ internal class RegisterPixControllerTest {
         val exception = assertThrows<HttpClientResponseException>{ httpClient.toBlocking().exchange(request, Unit::class.java) }
         with(exception){
             assertEquals(HttpStatus.BAD_REQUEST, status)
-//            assertTrue(response.body())
+        }
+    }
+
+    @Test
+    internal fun `should not register pix when key already exists`() {
+        val pixRequest = PixRequest(
+            value = "12312312312",
+            keyType = PixKeyType.CPF,
+            accountType = AccountType.CURRENT
+        )
+        BDDMockito.given(grpcClient.register(Mockito.any()))
+            .willThrow(StatusRuntimeException(Status.ALREADY_EXISTS))
+
+        val request = HttpRequest.POST(BASE_PATH, pixRequest)
+            .header("CLIENT_ID", "c56dfef4-7901-44fb-84e2-a2cefb157890")
+        val exception = assertThrows<HttpClientResponseException>{ httpClient.toBlocking().exchange(request, Unit::class.java) }
+        with(exception){
+            assertEquals(HttpStatus.UNPROCESSABLE_ENTITY, status)
+            assertEquals("Unprocessable Entity", message)
         }
     }
 }
